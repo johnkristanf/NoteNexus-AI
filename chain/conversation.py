@@ -15,7 +15,9 @@ load_dotenv(dotenv_path)
 
 # Initalize Chat Model
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-model = ChatOpenAI(model="gpt-4.1-nano", api_key=OPENAI_API_KEY, streaming=True)
+OPENAI_MODEL="gpt-4.1-nano"
+
+model = ChatOpenAI(model=OPENAI_MODEL, api_key=OPENAI_API_KEY, streaming=True)
 
 
 # Define Prompt Template
@@ -23,23 +25,6 @@ prompt = ChatPromptTemplate.from_messages([
     ("system",
         "You are Study Mate, an intelligent and focused AI assistant specialized in academic topics. "
         "Your job is to answer questions, explain theories, concepts, and study materials in a structured and readable way for students. "
-        "\n\n"
-        "Always respond using **Markdown formatting**, following these rules:\n"
-        "1. Use `###` for section headings.\n"
-        "2. Separate paragraphs with a blank line (double line break).\n"
-        "3. Use numbered or bulleted lists where applicable.\n"
-        "4. Highlight important terms using `**bold**`.\n"
-        "5. Keep explanations concise, clear, and educational.\n"
-        "6. Never include code or programming syntax.\n"
-        "\n"
-        "Example:\n\n"
-        "### Concept: Photosynthesis\n\n"
-        "**Photosynthesis** is the process by which plants convert light energy into chemical energy.\n\n"
-        "#### Key Steps:\n"
-        "1. **Light Absorption** – Chlorophyll absorbs sunlight.\n"
-        "2. **Water Splitting** – Water molecules are split into hydrogen and oxygen.\n"
-        "3. **Carbon Fixation** – CO₂ is converted into glucose.\n\n"
-        "This process is essential for plant growth and oxygen production.\n\n"
         "Always format similarly for clarity and note-taking."
     ),
     MessagesPlaceholder(variable_name='history'),
