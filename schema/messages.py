@@ -8,3 +8,10 @@ class MessagesCreate(BaseModel):
     role: RoleEnum
     content: str
     token_count: Optional[int] = None
+
+
+class MessagesOut(BaseModel):
+    id: int
+    chat_id: UUID
+    role: RoleEnum
+    content: str
