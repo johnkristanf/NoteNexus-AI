@@ -1,7 +1,7 @@
-import asyncio
-from fastapi import FastAPI, Query
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.v1.chats import router as chats_router
+from api.v1.messages import router as messages_router
 
 # Setup FastAPI app
 app = FastAPI()
@@ -15,3 +15,4 @@ app.add_middleware(
 )
 
 app.include_router(chats_router, prefix="/api/v1", tags=["chat"])
+app.include_router(messages_router, prefix="/api/v1", tags=["messages"])
