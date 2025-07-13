@@ -9,3 +9,7 @@ class ChatCreate(BaseModel):
 class ChatsOut(BaseModel):
     id: UUID
     title: str
+    
+    
+class ChatUpdate(BaseModel):
+    title: str
