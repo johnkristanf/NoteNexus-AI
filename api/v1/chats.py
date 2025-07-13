@@ -1,16 +1,21 @@
 import asyncio
 
-from fastapi import APIRouter, Body, Depends, Query
+from fastapi import APIRouter, Body, Depends, Query, UploadFile, Form, File, HTTPException
 from fastapi.responses import StreamingResponse, JSONResponse
 
 from sqlalchemy.orm import Session
-from schema.chats import ChatCreate
+from schema.chats import ChatCreate, ChatUpdate
 from repository.chats import ChatsRepository
 from chain.conversation import conversational_chain
 from database.init import get_db
 
 from schema.chats import ChatsOut
 from typing import List
+
+from docx import Document
+from PyPDF2 import PdfReader
+import fitz
+from io import BytesIO
 
 router = APIRouter()
 
@@ -35,7 +40,6 @@ def get_chat_messages( db: Session = Depends(get_db)):
 
 @router.post('/send/message')
 async def send_llm_message(payload: dict = Body(...)):
-    print("ENDITPONT HIT")
     input_text = payload.get("input")
     chat_id = payload.get("chat_id", "default")
 
@@ -55,7 +59,85 @@ async def send_llm_message(payload: dict = Body(...)):
 
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
+    
 
+@router.patch("/chat/{chat_id}")
+def update_chat(chat_id: str, payload: ChatUpdate, db: Session = Depends(get_db)):
+    repo = ChatsRepository(db)
+    updated_chat_id = repo.update_chat_title(chat_id, payload.title)
+    return JSONResponse(content={"updated_chat_id": str(updated_chat_id)}, status_code=200)
+
+
+
+@router.delete("/chat/{chat_id}")
+def delete_chat(chat_id: str, db: Session = Depends(get_db)):
+    repo = ChatsRepository(db)
+    repo.delete_chat(chat_id)
+    return JSONResponse(content={"message": "Chat deleted successfully"}, status_code=200)
+
+
+
+# HANDLE THE LLM RESPONSE LATER EACH FILE TYPE
+@router.post("/upload/learning/material")
+async def upload_learning_material(    
+    chat_id: str = Form(...),
+    learningMaterial: UploadFile = File(...)
+):
+    try:
+        if not learningMaterial.filename.endswith(('.pdf', '.doc', '.docx')):
+            raise HTTPException(status_code=400, detail="Unsupported file type")
+        
+        print(f'chat_id: {chat_id}')
+        print(f'learningMaterial: {learningMaterial}')
+
+        rawLM = await learningMaterial.read()
+        extension = learningMaterial.filename.split('.')[-1].lower()
+        content = ""
+
+        if extension == 'docx':
+            doc = Document(BytesIO(rawLM))
+            content = "\n".join([para.text for para in doc.paragraphs])
+            
+        elif extension == 'pdf':
+            doc = fitz.open(stream=rawLM, filetype="pdf")
+            content = "\n".join([page.get_text() for page in doc])
+
+        print(f'Extracted content: {content}')
+        if content.strip():  # Check if content is not empty or just whitespace
+            input_text = (
+                "Extract the **core concepts**, theories, key ideas, and definitions from the following academic material delimited by triple backticks. "
+                "At the start of your response, include the Markdown heading: '## 📘 Below are the Key Concepts from your Learning Material'.\n\n"
+                "Present the concepts in clean Markdown bullet points. Be concise, avoid summaries, and focus on reusable concepts.\n\n"
+                "```\n"
+                f"{content}\n"
+                "```"
+            )
+        else:
+            input_text = (
+                "At the start of your response, include the Markdown heading: '## ⚠️ Unable to Extract Concepts' \n\n"
+                "The uploaded material appears to be empty or unreadable. Please check the file and try uploading a different document.\n\n"
+                "**Provide a short list of actionable steps in Markdown bullet points that the user can take to resolve this issue.** "
+                "The advice should be practical, concise, and relevant to file uploading or readability problems."
+            )
+
+
+
+
+        response = conversational_chain.invoke(
+            {"input": input_text},
+            config={"configurable": {"session_id": chat_id}},  # optional if you're using memory
+        )
+            
+        print(f'response: {response}')
+        return JSONResponse(content={"content": response.content})
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
+
+
+
+
+# THIS IS THE ORIGINAL STREAMED RESPONSE CHAT
 # @router.get('/chat/stream')
 # async def chat_stream(input: str = Query(...), chat_id: str = "default"):
 #     async def stream_generator():
