@@ -4,7 +4,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
 
@@ -15,9 +15,15 @@ load_dotenv(dotenv_path)
 
 # Initalize Chat Model
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OPENAI_MODEL="gpt-4.1-nano"
+OPENAI_MODEL="gpt-4.1-mini"
+MAX_TOKEN=500
 
-model = ChatOpenAI(model=OPENAI_MODEL, api_key=OPENAI_API_KEY, streaming=True)
+model = ChatOpenAI(
+    model=OPENAI_MODEL, 
+    api_key=OPENAI_API_KEY, 
+    streaming=True, 
+    max_completion_tokens=MAX_TOKEN
+)
 
 
 # Define Prompt Template
@@ -28,7 +34,7 @@ prompt = ChatPromptTemplate.from_messages([
         "Always format similarly for clarity and note-taking."
     ),
     MessagesPlaceholder(variable_name='history'),
-    ("human", "{input}"),
+    HumanMessagePromptTemplate.from_template("{input}"),
 ])
 
 
@@ -57,3 +63,4 @@ conversational_chain = RunnableWithMessageHistory(
     input_messages_key='input',
     history_messages_key='history'
 )
+    
