@@ -16,7 +16,7 @@ load_dotenv(dotenv_path)
 # Initalize Chat Model
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_MODEL="gpt-4.1-mini"
-MAX_TOKEN=500
+MAX_TOKEN=1500
 
 model = ChatOpenAI(
     model=OPENAI_MODEL, 
