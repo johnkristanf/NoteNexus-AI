@@ -1,5 +1,5 @@
 
-from sqlalchemy import Column, Integer, Text, DateTime, func
+from sqlalchemy import Column, Integer, Text, DateTime, String, ForeignKey, func
 from database.base import Base
 
 class Notes(Base):
@@ -8,3 +8,6 @@ class Notes(Base):
     content = Column(Text, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    user_id = Column(String, nullable=False)
+
