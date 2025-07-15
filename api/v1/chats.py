@@ -13,7 +13,6 @@ from schema.chats import ChatsOut
 from typing import List
 
 from docx import Document
-from PyPDF2 import PdfReader
 import fitz
 from io import BytesIO
 
