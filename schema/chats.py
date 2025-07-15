@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 class ChatCreate(BaseModel):
+    user_id: str
     title: Optional[str] = None
 
 

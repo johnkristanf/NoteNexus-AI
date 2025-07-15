@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 class NotesCreate(BaseModel):
+    user_id: str
     content: str
     
 class NotesOut(BaseModel):
