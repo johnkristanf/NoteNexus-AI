@@ -60,6 +60,7 @@ jobs:
               docker-compose.prod.yml
               alembic.ini
             target: ${{ env.SERVER_DIR }}
+            debug: true
 
 
       - name: 🚀 Deploy on EC2 via SSH
