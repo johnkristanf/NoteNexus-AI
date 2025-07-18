@@ -23,13 +23,13 @@ jobs:
       - name: 🧱 Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Print Docker Hub Credentials (⚠️ TEMP DEBUG ONLY)
+      - name: TEMP Echo Docker Hub secrets unmasked
         run: |
-          echo "Username: $DOCKER_HUB_USERNAME"
-          echo "Password: $DOCKER_HUB_PASSWORD"
+          echo "Actual Username: $UNMASKED_USERNAME"
+          echo "Actual Password: $UNMASKED_PASSWORD"
         env:
-          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          UNMASKED_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          UNMASKED_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
 
       # DOCKER BUILDING AND PUSHING TO DOCKER HUB REGISTRY
@@ -38,6 +38,7 @@ jobs:
         with:
           username: $DOCKER_HUB_USERNAME
           password: $DOCKER_HUB_PASSWORD
+
 
       - name: Create .env File for Docker Compose Environment
         run: |
