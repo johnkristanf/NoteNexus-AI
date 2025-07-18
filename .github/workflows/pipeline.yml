@@ -32,8 +32,8 @@ jobs:
       - name: 🔐 Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: $DOCKER_HUB_USERNAME
-          password: $DOCKER_HUB_PASSWORD
+          username: ${{ env.DOCKER_HUB_USERNAME }}
+          password: ${{ env.DOCKER_HUB_PASSWORD }}
 
 
       - name: Create .env File for Docker Compose Environment
