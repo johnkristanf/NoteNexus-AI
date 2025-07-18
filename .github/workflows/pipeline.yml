@@ -48,9 +48,6 @@ jobs:
             docker compose -f docker-compose.local.yml build --no-cache
             docker compose -f docker-compose.local.yml push 
 
-      - name: List files
-        run: ls -lah
-
       - name: 🏗️ Ensure server directory exists
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -101,17 +98,17 @@ jobs:
               ls -lah
 
               echo "🧼 Stopping old containers (if any)..."
-              docker-compose down || true
+              docker-compose -f docker-compose.prod.yml down || true
 
               echo "⬇️ Pulling latest images..."
-              docker-compose pull
+              docker-compose -f docker-compose.prod.yml pull
 
               echo "🚀 Starting containers..."
-              docker-compose up -d --remove-orphans
+              docker-compose -f docker-compose.prod.yml up -d --remove-orphans
 
               echo "✅ Checking container status..."
-              docker-compose ps
+              docker-compose -f docker-compose.prod.yml ps
 
               echo "📜 Recent logs:"
-              docker-compose logs --tail=50
+              docker-compose -f docker-compose.prod.yml logs --tail=50
 
