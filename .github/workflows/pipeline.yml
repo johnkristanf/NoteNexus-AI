@@ -100,6 +100,21 @@ jobs:
 
               echo "🧼 Stopping old containers (if any)..."
               docker-compose -f docker-compose.prod.yml down || true
+              
+              echo "🛑 Stopping system web servers that might be using port 80..."
+              sudo systemctl stop apache2 || true
+              sudo systemctl stop nginx || true
+              sudo systemctl stop httpd || true
+              
+              echo "🧹 Cleaning up any containers using port 80..."
+              docker ps --filter "publish=80" -q | xargs -r docker stop || true
+              docker ps -a --filter "publish=80" -q | xargs -r docker rm || true
+              
+              echo "🔪 Killing any remaining processes on port 80..."
+              sudo fuser -k 80/tcp || true
+              
+              echo "🔍 Checking what's using port 80..."
+              sudo netstat -tlnp | grep :80 || echo "Port 80 is now free"
 
               echo "⬇️ Pulling latest images..."
               docker-compose -f docker-compose.prod.yml pull
