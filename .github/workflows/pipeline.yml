@@ -48,6 +48,8 @@ jobs:
             docker compose -f docker-compose.local.yml build --no-cache
             docker compose -f docker-compose.local.yml push 
 
+      - name: List files
+        run: ls -lah
 
       # EC2 INSTANCE DEPLOYMENT SETUP
       - name: 📂 Upload Compose & Config Files to EC2
