@@ -1,0 +1,92 @@
+name: Deploy NoteNexus AI to Amazon EC2 (Amazon Linux 2)
+on:
+  push:
+    branches: [main]
+env:
+  SERVER_DIR: /home/${{ secrets.EC2_USER }}/server
+  DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+  DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  EC2_HOST: ${{ secrets.EC2_HOST }}
+  EC2_USER: ${{ secrets.EC2_USER }}
+  EC2_KEY: ${{ secrets.EC2_KEY }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code 
+        uses: actions/checkout@v3
+
+      - name: 🧱 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # DOCKER BUILDING AND PUSHING TO DOCKER HUB REGISTRY
+      - name: 🔐 Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: $DOCKER_HUB_USERNAME
+          password: $DOCKER_HUB_PASSWORD
+
+      - name: Create .env File for Docker Compose Environment
+        run: |
+          cat <<'EOF' > .env
+          DATABASE_URL=$DATABASE_URL
+          OPENAI_API_KEY=$OPENAI_API_KEY
+          EOF
+
+      - name: Build & Push Docker Image using Docker Compose
+        run: |
+            docker compose build --no-cache
+            docker compose push 
+
+
+      # EC2 INSTANCE DEPLOYMENT SETUP
+      - name: 📂 Upload Compose & Config Files to EC2
+        uses: appleboy/scp-action@v0.1.5
+        with:
+            host: ${{ env.EC2_HOST }}
+            username: ${{ env.EC2_USER }}
+            key: ${{ env.EC2_KEY }}
+            source: |
+              docker-compose.prod.yml
+              alembic.ini
+            target: ${{ env.SERVER_DIR }}
+
+
+      - name: 🚀 Deploy on EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+            host: ${{ env.EC2_HOST }}
+            username: ${{ env.EC2_USER }}
+            key: ${{ env.EC2_KEY }}
+            script: |
+              set -e
+              cd $SERVER_DIR
+
+              echo "🟨 Logging in to Docker..."
+              docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
+
+              echo "📄 Writing .env file..."
+              cat <<'EOF' > .env
+              DATABASE_URL=$DATABASE_URL
+              OPENAI_API_KEY=$OPENAI_API_KEY
+              EOF
+
+              echo "🧼 Stopping old containers (if any)..."
+              docker-compose down || true
+
+              echo "⬇️ Pulling latest images..."
+              docker-compose pull
+
+              echo "🚀 Starting containers..."
+              docker-compose up -d --remove-orphans
+
+              echo "✅ Checking container status..."
+              docker-compose ps
+
+              echo "📜 Recent logs:"
+              docker-compose logs --tail=50
+
