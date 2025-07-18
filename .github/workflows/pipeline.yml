@@ -60,6 +60,12 @@ jobs:
           script: |
             mkdir -p ${{ env.SERVER_DIR }}
 
+      - name: 🔍 Debug file presence
+        run: |
+          ls -lah
+          ls -lah docker-compose.prod.yml || echo "Missing: docker-compose.prod.yml"
+          ls -lah alembic.ini || echo "Missing: alembic.ini"
+
 
       # EC2 INSTANCE DEPLOYMENT SETUP
       - name: 📂 Upload Compose & Config Files to EC2
