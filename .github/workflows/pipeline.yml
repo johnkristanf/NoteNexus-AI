@@ -98,6 +98,8 @@ jobs:
               OPENAI_API_KEY=$OPENAI_API_KEY
               EOF
 
+              ls -lah
+
               echo "🧼 Stopping old containers (if any)..."
               docker-compose down || true
 
