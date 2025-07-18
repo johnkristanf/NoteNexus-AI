@@ -25,12 +25,8 @@ jobs:
 
       - name: TEMP Echo Docker Hub secrets unmasked
         run: |
-          echo "Actual Username: $UNMASKED_USERNAME"
-          echo "Actual Password: $UNMASKED_PASSWORD"
-        env:
-          UNMASKED_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-          UNMASKED_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
-
+            echo "Username length: ${#DOCKER_HUB_USERNAME}"
+            echo "Password length: ${#DOCKER_HUB_PASSWORD}"
 
       # DOCKER BUILDING AND PUSHING TO DOCKER HUB REGISTRY
       - name: 🔐 Log in to Docker Hub
