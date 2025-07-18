@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  notenexus_ai:
+    build: .
+    image: johnkristan01/notenexus_ai:latest
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    environment: 
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DATABASE_URL=${DATABASE_URL}
