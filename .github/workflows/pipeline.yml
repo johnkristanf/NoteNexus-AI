@@ -71,8 +71,9 @@ jobs:
             host: ${{ env.EC2_HOST }}
             username: ${{ env.EC2_USER }}
             key: ${{ env.EC2_KEY }}
-            source: "docker-compose.prod.yml,alembic.ini"
+            source: "docker-compose.prod.yml,alembic.ini,default.conf"
             target: ${{ env.SERVER_DIR }}
+
 
 
       - name: 🚀 Deploy on EC2 via SSH
