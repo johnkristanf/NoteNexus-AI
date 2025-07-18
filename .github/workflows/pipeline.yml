@@ -74,9 +74,7 @@ jobs:
             host: ${{ env.EC2_HOST }}
             username: ${{ env.EC2_USER }}
             key: ${{ env.EC2_KEY }}
-            source: |
-              ./docker-compose.prod.yml
-              ./alembic.ini
+            source: "docker-compose.prod.yml,alembic.ini"
             target: ${{ env.SERVER_DIR }}
             debug: true
 
