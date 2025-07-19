@@ -10,8 +10,9 @@ app = FastAPI()
 # Allow CORS for local dev
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Your Next.js app origin
-    allow_methods=["*"],
+    allow_origins=["https://app.notenexus.it.com"],  # Your frontend domain
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
