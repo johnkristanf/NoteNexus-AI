@@ -96,16 +96,16 @@ jobs:
               OPENAI_API_KEY=$OPENAI_API_KEY
               EOF
 
+
+              echo "📄 Checking Files inside EC2"
               ls -lah
 
+              echo "📄 Viewing .env file"
               cat .env
 
               echo "🧼 Stopping old containers (if any)..."
               docker-compose -f docker-compose.prod.yml down || true
               
-              echo "🛑 Stopping system web servers that might be using port 80..."
-              sudo systemctl stop nginx || true
-
               echo "⬇️ Pulling latest images..."
               docker-compose -f docker-compose.prod.yml pull
 
