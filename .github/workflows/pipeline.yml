@@ -98,6 +98,8 @@ jobs:
 
               ls -lah
 
+              cat .env
+
               echo "🧼 Stopping old containers (if any)..."
               docker-compose -f docker-compose.prod.yml down || true
               
