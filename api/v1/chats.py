@@ -1,7 +1,7 @@
 import asyncio
 
 from fastapi import APIRouter, Body, Depends, Query, UploadFile, Form, File, HTTPException
-from fastapi.responses import StreamingResponse, JSONResponse
+from fastapi.responses import JSONResponse
 
 from sqlalchemy.orm import Session
 from schema.chats import ChatCreate, ChatUpdate
@@ -31,9 +31,10 @@ def create_chat(chat: ChatCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/fetch/chats", response_model=List[ChatsOut])
-def get_chat_messages( db: Session = Depends(get_db)):
+def get_chat_messages(user_id: str = Query(...), db: Session = Depends(get_db)):
     repo = ChatsRepository(db)
-    chats = repo.get_all_chats_summary()
+    print(f'user_id: {user_id}')
+    chats = repo.get_all_chats_summary(user_id)
     return chats 
 
 

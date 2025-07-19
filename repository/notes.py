@@ -17,10 +17,11 @@ class NotesRepository:
     
     
     
-    def get_all_notes(self) -> List[NotesOut]:
+    def get_all_notes(self, user_id: str) -> List[NotesOut]:
         return (
             self.db.query(Notes)
-            .order_by(Notes.created_at.desc()) 
+            .filter(Notes.user_id == user_id)              # ← Add this line
+            .order_by(Notes.created_at.desc())
             .all()
         )
         

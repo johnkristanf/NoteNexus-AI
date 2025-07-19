@@ -15,8 +15,8 @@ class ChatsRepository:
         self.db.refresh(new_chat)
         return new_chat.id
     
-    def get_all_chats_summary(self) -> list[ChatsOut]:
-        stmt = select(Chats.id, Chats.title)
+    def get_all_chats_summary(self, user_id) -> list[ChatsOut]:
+        stmt = select(Chats.id, Chats.title).where(Chats.user_id == user_id)
         results = self.db.execute(stmt).all()
         return [{"id": row.id, "title": row.title} for row in results]
     

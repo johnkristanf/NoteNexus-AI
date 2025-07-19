@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from fastapi.responses import JSONResponse
 
 from typing import List
@@ -18,9 +18,9 @@ def create_note(note: NotesCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/fetch/notes", response_model=List[NotesOut])
-def get_chat_messages(db: Session = Depends(get_db)):
+def get_chat_messages(user_id: str = Query(...), db: Session = Depends(get_db)):
     repo = NotesRepository(db)
-    notes =  repo.get_all_notes()
+    notes =  repo.get_all_notes(user_id)
     return notes 
 
 
