@@ -80,7 +80,7 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
             host: ${{ env.EC2_HOST }}
-            username: ${{ env.EC2_USER }}
+            username: ${{ env.EC2_USER }} 
             key: ${{ env.EC2_KEY }}
             envs: DOCKER_HUB_USERNAME,DOCKER_HUB_PASSWORD,DATABASE_URL,OPENAI_API_KEY,SERVER_DIR
             script: |
