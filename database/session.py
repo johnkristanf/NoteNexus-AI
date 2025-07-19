@@ -6,6 +6,8 @@ from pathlib import Path
 
 root_dir = Path(__file__).resolve().parent.parent  # Adjust depth if needed
 dotenv_path = root_dir / ".env.local"
+if not dotenv_path.exists():
+    dotenv_path = root_dir / ".env"
 
 load_dotenv(dotenv_path=dotenv_path)
 DATABASE_URL = os.getenv("DATABASE_URL")
