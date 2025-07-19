@@ -8,13 +8,13 @@ from api.v1.notes import router as notes_router
 app = FastAPI()
 
 # Allow CORS for local dev
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["https://app.notenexus.it.com"],  # Your frontend domain
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["https://app.notenexus.it.com"],  # Your frontend domain
+#     allow_credentials=True,
+#     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+#     allow_headers=["*"],
+# )
 
 @app.get("/health")
 def health_check():
