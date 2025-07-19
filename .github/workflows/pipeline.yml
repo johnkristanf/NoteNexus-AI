@@ -100,7 +100,7 @@ jobs:
               echo "📄 Checking Files inside EC2"
               ls -lah
 
-              echo "📄 Viewing .env file"
+              echo "📄 Viewing .env"
               cat .env
 
               echo "🧼 Stopping old containers (if any)..."
